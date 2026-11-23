@@ -1,5 +1,7 @@
 'use strict';
 
+const mediaTypes = { mp4: 'video/mp4', jpg: 'image/jpeg', png: 'image/png' };
+
 // URL живут до закрытия страницы. Ролики и стоп-кадры открываются из памяти.
 const offlineMedia = (() => {
   const urls = new Map();
@@ -55,7 +57,7 @@ const offlineMedia = (() => {
           showProgress(value.byteLength);
         }
         if (received !== size) throw new Error('Размер файла отличается от указанного при сборке');
-        const type = file.endsWith('.mp4') ? 'video/mp4' : 'image/jpeg';
+        const type = mediaTypes[file.split('.').at(-1)];
         urls.set(file, URL.createObjectURL(new Blob(chunks, { type })));
       } catch (error) {
         showProgress(-received);

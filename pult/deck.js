@@ -66,7 +66,7 @@ const miniConclusions = {
   },
 };
 
-/** Вернуть текст финального слайда с результатом лучшего опыта. */
+/** Вернуть текст общего вывода с результатом лучшего опыта. */
 function researchConclusion(data) {
   const { height } = finalMeasurements(data, 'best');
   return {
@@ -81,6 +81,19 @@ function researchConclusion(data) {
     ],
   };
 }
+
+const giftSlide = {
+  id: 'gift',
+  image: 'hero-end.jpg',
+  poster: 'gift.png',
+  eyebrow: 'ПОДАРОК',
+  heading: '🎁 Авокадо — вам домой!',
+  instruction: 'Наведите камеру телефона на QR‑код — на экране или на карточке.',
+  description: 'Деревце вырастет прямо у вас на столе, а дома — дерево с плодами.',
+  address: url => url.replace(/^https:\/\/|\/$/g, ''),
+  posterAlt: 'Дерево авокадо с плодами',
+  footer: 'Спасибо за внимание!',
+};
 
 /** Вернуть округлённые показатели опыта на последний день исследования. */
 function finalMeasurements(data, scenario) {
@@ -131,6 +144,7 @@ function websiteSlides(short) {
   return [
     ...websiteIntro.filter(screen => !short || !screen.fullOnly),
     ...websiteBaseSlides(short).filter(screen => screen.id !== 'theme'),
+    giftSlide,
   ].flatMap(screen => {
     if (screen.question) return [{ ...screen, image: clipFiles(screen.scenario).poster }];
     if (screen.id === 'conclusion') return [{ ...screen, summary: 'research' }];
@@ -146,7 +160,7 @@ function websiteSlides(short) {
 
 function websiteMedia() {
   return [...new Set(websiteSlides(false).flatMap(screen =>
-    screen.files ? Object.values(screen.files) : [screen.image].filter(Boolean)))];
+    screen.files ? Object.values(screen.files) : [screen.image, screen.poster].filter(Boolean)))];
 }
 
 function voteResult(scenario, selection) {

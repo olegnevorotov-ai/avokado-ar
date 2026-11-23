@@ -125,6 +125,23 @@
     slide.append(artwork(screen.image, 'cover'), panel);
   }
 
+  function showGift(screen) {
+    const qr = byId('gift-qr').content.firstElementChild.cloneNode(true);
+    const copy = text('div', '', 'gift-copy');
+    copy.append(
+      text('p', screen.eyebrow, 'eyebrow'),
+      text('h2', screen.heading),
+      text('p', screen.instruction),
+      text('p', screen.description),
+      text('p', screen.address(qr.dataset.url), 'gift-address'),
+    );
+    const tree = artwork(screen.poster, 'gift-tree');
+    tree.alt = screen.posterAlt;
+    const panel = text('section', '', 'gift');
+    panel.append(qr, copy, tree);
+    slide.append(artwork(screen.image, 'cover'), panel, text('p', screen.footer, 'gift-footer'));
+  }
+
   function growthPanel(clip) {
     const scenario = clip === 'hero' ? 'best' : clip;
     const entry = filmData.scenarios[scenario];
@@ -262,6 +279,7 @@
     else if (screen.question) voting(screen);
     else if (screen.clip) clip(screen);
     else if (screen.summary) showSummary(screen);
+    else if (screen.id === giftSlide.id) showGift(screen);
     else slide.append(artwork(screen.image, 'cover'));
     hint.textContent = screen.question ? 'Щёлкните карточку · Пробел — ролик · Esc — выход'
       : current === screens.length - 1 ? '← назад · Esc — выход'

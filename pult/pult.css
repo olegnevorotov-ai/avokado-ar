@@ -251,13 +251,16 @@
 #stage .result p { margin-top: .55cqw; font-size: 1.63cqw; line-height: 1.24; }
 
 /* Непрозрачные края закрывают подписи, счётчик и шкалу, вшитые в кадр. */
-#slide:is([data-screen^="mini-"], [data-screen="conclusion"])::before {
+#slide:is([data-screen^="mini-"], [data-screen="conclusion"], [data-screen="gift"])::before {
   content: "";
   position: absolute;
   inset: 0;
   background: linear-gradient(#10160f 17%, #10160fb5 38%, #10160f87 83%, #10160f 92%);
 }
-#slide:is([data-screen="mini-hero"], [data-screen="conclusion"])::after {
+#slide[data-screen="gift"]::before {
+  background: linear-gradient(#10160f 17%, #10160fe6 36%, #10160fdb 79%, #10160f 92%);
+}
+#slide:is([data-screen="mini-hero"], [data-screen="conclusion"], [data-screen="gift"])::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -315,3 +318,28 @@
 .finding-mark { color: #a1d468; font-weight: 700; }
 .finding-mark[data-mark="✗"] { color: #f78d8d; }
 .finding-mark[data-mark="⏳"] { color: #ffbd65; }
+
+.gift {
+  position: absolute;
+  z-index: 1;
+  inset: 0 4.5cqw;
+  display: grid;
+  grid-template-columns: 29cqw minmax(0, 1fr) 26cqw;
+  align-items: center;
+  gap: 2.7cqw;
+}
+.gift :is(.qr, .gift-tree) { display: block; width: 100%; }
+.gift .qr { border-radius: 1cqw; }
+.gift-copy { display: grid; gap: 1.25cqw; font-size: 1.85cqw; line-height: 1.43; font-weight: 700; }
+.gift-copy .eyebrow { font-size: 1.85cqw; }
+.gift-copy h2 { color: #ffd164; font-size: 3.85cqw; line-height: 1.12; }
+.gift-address { color: var(--lime); }
+.gift-footer {
+  position: absolute;
+  z-index: 1;
+  inset: auto 0 6.5%;
+  color: var(--lime);
+  font-size: 3.05cqw;
+  font-weight: 700;
+  text-align: center;
+}
