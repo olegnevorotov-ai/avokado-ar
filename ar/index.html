@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f3f6ed">
+  <title>Как косточка авокадо становится деревом</title>
+  <link rel="icon" href="./icon.png" type="image/png">
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./page.js"></script>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Как косточка авокадо становится деревом</h1>
+      <p>Покрути пальцем или поставь у себя дома</p>
+    </header>
+    <div class="view">
+      <model-viewer ar ar-modes="webxr scene-viewer quick-look" ar-scale="fixed"
+        camera-controls camera-orbit="0deg 78deg auto" touch-action="pan-y"
+        interaction-prompt="none" shadow-intensity="0.45" alt="Авокадо в стакане">
+        <span slot="ar-button" hidden></span>
+      </model-viewer>
+      <img class="poster" alt="" hidden>
+      <span class="hint" aria-hidden="true">↻ крути пальцем</span>
+    </div>
+    <div class="models" role="group" aria-label="Выбор дерева">
+      <button type="button" data-model="tree" aria-pressed="true">Деревце, 100 дней</button>
+      <button type="button" data-model="gift" aria-pressed="false">🎁 Подарок</button>
+    </div>
+    <p class="note" aria-live="polite"><strong class="lead"></strong> <span class="text"></span></p>
+    <div class="placement">
+      <p class="status" role="status"></p>
+      <button class="place" type="button">
+        <span aria-hidden="true">▣</span> <span class="place-label"></span>
+      </button>
+    </div>
+    <footer>Проект для научной конференции</footer>
+  </main>
+</body>
+</html>

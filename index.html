@@ -3,35 +3,141 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f3f6ed">
-  <title>Как косточка авокадо становится деревом</title>
-  <link rel="icon" href="./icon.png" type="image/png">
-  <link rel="stylesheet" href="./style.css">
-  <script type="module" src="./page.js"></script>
+  <title>Авокадо в 3D</title>
+  <link rel="icon" href="./ar/icon.png" type="image/png">
+  <link rel="stylesheet" href="style.css">
+  <script src="data.js" defer></script>
+  <script src="page.js" defer></script>
 </head>
 <body>
-  <main>
-    <header>
-      <h1>Как косточка авокадо становится деревом</h1>
-      <p>Покрути деревце пальцем или поставь его у себя на стол</p>
-    </header>
-    <div class="view">
-      <model-viewer ar ar-modes="webxr scene-viewer quick-look" ar-scale="fixed"
-        camera-controls camera-orbit="0deg 78deg auto" touch-action="pan-y"
-        interaction-prompt="none" shadow-intensity="0.45" alt="Авокадо в стакане">
-        <span slot="ar-button" hidden></span>
-      </model-viewer>
-      <span class="hint" aria-hidden="true">↻ крути пальцем</span>
+<main class="wrap">
+  <header class="head">
+    <div class="eyebrow">Научная конференция · 3D-модель</div>
+    <h1 id="theme">Как косточка авокадо становится деревом</h1>
+    <p class="lead">Трёхмерная модель роста авокадо: <span data-span></span>, опыт с разными условиями и взгляд внутрь косточки.</p>
+    <div class="actions">
+      <a class="btn primary ar-link" href="./ar/">Поставь авокадо у себя дома — дерево с плодами в подарок</a>
     </div>
-    <div class="stages" role="group" aria-label="Этапы роста"></div>
-    <p class="note" aria-live="polite"><strong class="day"></strong> <span class="text"></span></p>
-    <div class="placement">
-      <p class="status" role="status"></p>
-      <button class="place" type="button">
-        <span aria-hidden="true">▣</span> Поставить на стол
-      </button>
+  </header>
+
+  <section>
+    <h2 data-span></h2>
+    <div class="frame preview">
+      <video src="media/hero.mp4" poster="media/hero-end.jpg" playsinline
+             preload="metadata" aria-labelledby="theme"></video>
+      <button class="playmark" type="button" aria-label="Смотреть ролик о росте авокадо"></button>
     </div>
-    <footer>Проект для школьной научной конференции</footer>
-  </main>
+    <p class="sec-lead">Раскадровка ролика:</p>
+    <div class="board" id="board"></div>
+  </section>
+
+  <section>
+    <h2>Попробуй сам: что будет, если…</h2>
+    <p class="sec-lead">Выбираешь условия, и на экране идёт 3D-ролик именно для них. Ползунок перематывает дни.</p>
+    <div class="sim">
+      <div class="box">
+        <div class="frame sim-frame" id="sim-frame">
+          <img id="sim-poster" src="media/best-end.jpg" alt="">
+          <video id="sim-video" playsinline preload="metadata" aria-label="Опыт с выбранными условиями"></video>
+          <div id="part-layer" aria-hidden="true"></div>
+        </div>
+        <div class="timeline">
+          <button id="play" class="btn primary" type="button"></button>
+          <label class="sr-only" for="day">День</label>
+          <input id="day" type="range" min="0" step="1">
+          <output id="day-out" for="day"></output>
+        </div>
+      </div>
+      <div class="box">
+        <h3>Условия опыта</h3>
+        <div class="scns" id="scns"></div>
+        <label class="toggle"><input id="labels" type="checkbox" checked> Подписать части растения</label>
+        <div class="stats">
+          <div class="stat"><span>Высота</span><strong id="height"></strong></div>
+          <div class="stat"><span>Листьев</span><strong id="leaves"></strong></div>
+          <div class="stat"><span>Корень</span><strong id="root"></strong></div>
+        </div>
+        <p class="note" id="note"></p>
+      </div>
+    </div>
+    <div class="box">
+      <h3>Этапы роста</h3>
+      <ol class="stages" id="stages"></ol>
+    </div>
+    <div class="box">
+      <h3>Высота по дням</h3>
+      <div class="chart-wrap">
+        <svg id="chart" viewBox="0 0 640 226" role="img" aria-label="График высоты авокадо по дням">
+          <g id="grid"></g>
+          <path id="ideal-line" fill="none" stroke="#8da779" stroke-width="2.5" stroke-dasharray="7 6"></path>
+          <text id="ideal-label" font-size="13" font-weight="700" fill="#526b40"></text>
+          <path id="curve" fill="none" stroke="#4b7a22" stroke-width="3.5" stroke-linejoin="round"></path>
+          <circle id="point" r="6" fill="#4b7a22" stroke="#fff" stroke-width="2"></circle>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 id="cut-title"></h2>
+    <div class="cut">
+      <div class="frame preview">
+        <video src="media/cut.mp4" poster="media/cut-end.jpg" playsinline
+               preload="metadata" aria-labelledby="cut-title"></video>
+        <button class="playmark" type="button" aria-label="Смотреть ролик о разрезе косточки"></button>
+      </div>
+      <div class="box">
+        <p class="sec-lead">В ролике половинки косточки плавно раскрываются, и камера заглядывает внутрь.</p>
+        <ol class="parts">
+          <li><h3>Семядоли</h3><p>Две большие половинки. Это запас еды, которым растение питается, пока у него нет листьев.</p></li>
+          <li><h3>Почечка</h3><p>Из неё вырастет стебель с листьями.</p></li>
+          <li><h3>Корешок</h3><p>Из него вырастет корень, который первым выходит из косточки.</p></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Удивительные факты</h2>
+    <div class="facts">
+      <div class="fact">
+        <svg id="height-comparison" viewBox="0 0 220 150" role="img">
+          <line x1="8" y1="140" x2="212" y2="140" stroke="#c9d3bb" stroke-width="2"/>
+          <rect x="146" y="22" width="10" height="118" fill="#6e4126"/>
+          <ellipse cx="151" cy="50" rx="52" ry="32" fill="#4b7a22"/>
+          <rect x="30" y="132.3" width="8" height="7.7" fill="#4b7a22"/>
+          <circle cx="72" cy="121" r="4" fill="#1d2916"/>
+          <rect x="69" y="125" width="6" height="15" rx="3" fill="#1d2916"/>
+          <g text-anchor="middle" font-size="11" font-weight="700" fill="#56664a">
+            <text x="34" y="124" id="sprout-height"></text>
+            <text x="72" y="110" id="student-height"></text>
+            <text x="151" y="12" id="tree-height"></text>
+          </g>
+        </svg>
+        <h3 class="big" id="tree-height-title"></h3>
+        <p>Такой высоты авокадо вырастает в природе. Это выше шестиэтажного дома.</p>
+      </div>
+      <div class="fact">
+        <h3 class="big">Ягода</h3>
+        <p>Для ботаников авокадо — ягода с одной большой косточкой, как вишня.</p>
+      </div>
+      <div class="fact">
+        <h3 class="big">Мексика</h3>
+        <p>Родина авокадо. Древние ацтеки называли его «ахуакатль».</p>
+      </div>
+      <div class="fact">
+        <h3 class="big">Гигантские ленивцы</h3>
+        <p>Огромные косточки когда-то глотали и разносили древние гиганты. Они вымерли, и теперь авокадо разносит только человек.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="ar-promo" aria-label="Дополненная реальность">
+    <a class="btn primary ar-link" href="./ar/">Поставь авокадо у себя дома — дерево с плодами в подарок</a>
+  </section>
+
+  <p class="foot">3D-модель: Blender. Цифры роста примерные, по опыту садоводов.</p>
+</main>
+
 </body>
 </html>
