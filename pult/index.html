@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Авокадо в 3D</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="../ar/icon.png" type="image/png">
+  <script src="../data.js" defer></script>
+  <script src="config.js" defer></script>
+  <script src="prepare.js" defer></script>
+  <script src="slides.js" defer></script>
+  <script src="pult.js" defer></script>
+  <script src="page.js" defer></script>
+</head>
+<body>
+<main class="wrap" data-preparing>
+  <header class="head">
+    <div class="eyebrow">Научная конференция · 3D-модель</div>
+    <h1 id="theme">Как косточка авокадо становится деревом</h1>
+    <p class="lead">Пульт выступления: avocado-forum.ru/pult</p>
+    <section class="box preparation" aria-labelledby="prepare-title">
+      <h2 id="prepare-title" role="status">Готовим выступление…</h2>
+      <progress id="prepare-progress" value="0" max="43840848" aria-label="Загрузка роликов и картинок"></progress>
+      <p id="prepare-count">Скачано <span id="prepare-downloaded">0</span> из 44 МБ. Не закрывайте страницу.</p>
+      <p id="prepare-message" hidden></p>
+      <div class="actions">
+        <button class="btn primary" id="start-full" type="button" disabled>Выступление</button>
+        <button class="btn" id="start-short" type="button" disabled>Короткое выступление</button>
+        <button class="btn" id="prepare-retry" type="button" hidden>Повторить</button>
+      </div>
+    </section>
+  </header>
+
+  <section>
+    <h2 data-span></h2>
+    <div class="frame preview">
+      <video data-src="hero.mp4" data-poster="hero-end.jpg" playsinline
+             preload="metadata" aria-labelledby="theme"></video>
+      <button class="playmark" type="button" aria-label="Смотреть ролик о росте авокадо"></button>
+    </div>
+    <p class="sec-lead">Раскадровка ролика:</p>
+    <div class="board" id="board"></div>
+  </section>
+
+  <section>
+    <h2>Попробуй сам: что будет, если…</h2>
+    <p class="sec-lead">Выбираешь условия, и на экране идёт 3D-ролик именно для них. Ползунок перематывает дни.</p>
+    <div class="sim">
+      <div class="box">
+        <div class="frame sim-frame" id="sim-frame">
+          <img id="sim-poster" alt="">
+          <video id="sim-video" playsinline preload="metadata" aria-label="Опыт с выбранными условиями"></video>
+          <div id="part-layer" aria-hidden="true"></div>
+        </div>
+        <div class="timeline">
+          <button id="play" class="btn primary" type="button"></button>
+          <label class="sr-only" for="day">День</label>
+          <input id="day" type="range" min="0" step="1">
+          <output id="day-out" for="day"></output>
+        </div>
+      </div>
+      <div class="box">
+        <h3>Условия опыта</h3>
+        <div class="scns" id="scns"></div>
+        <label class="toggle"><input id="labels" type="checkbox" checked> Подписать части растения</label>
+        <div class="stats">
+          <div class="stat"><span>Высота</span><strong id="height"></strong></div>
+          <div class="stat"><span>Листьев</span><strong id="leaves"></strong></div>
+          <div class="stat"><span>Корень</span><strong id="root"></strong></div>
+        </div>
+        <p class="note" id="note"></p>
+      </div>
+    </div>
+    <div class="box">
+      <h3>Этапы роста</h3>
+      <ol class="stages" id="stages"></ol>
+    </div>
+    <div class="box">
+      <h3>Высота по дням</h3>
+      <div class="chart-wrap">
+        <svg id="chart" viewBox="0 0 640 226" role="img" aria-label="График высоты авокадо по дням">
+          <g id="grid"></g>
+          <path id="ideal-line" fill="none" stroke="#8da779" stroke-width="2.5" stroke-dasharray="7 6"></path>
+          <text id="ideal-label" font-size="13" font-weight="700" fill="#526b40"></text>
+          <path id="curve" fill="none" stroke="#4b7a22" stroke-width="3.5" stroke-linejoin="round"></path>
+          <circle id="point" r="6" fill="#4b7a22" stroke="#fff" stroke-width="2"></circle>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 id="cut-title"></h2>
+    <div class="cut">
+      <div class="frame preview">
+        <video data-src="cut.mp4" data-poster="cut-end.jpg" playsinline
+               preload="metadata" aria-labelledby="cut-title"></video>
+        <button class="playmark" type="button" aria-label="Смотреть ролик о разрезе косточки"></button>
+      </div>
+      <div class="box">
+        <p class="sec-lead">В ролике половинки косточки плавно раскрываются, и камера заглядывает внутрь.</p>
+        <ol class="parts">
+          <li><h3>Семядоли</h3><p>Две большие половинки. Это запас еды, которым растение питается, пока у него нет листьев.</p></li>
+          <li><h3>Почечка</h3><p>Из неё вырастет стебель с листьями.</p></li>
+          <li><h3>Корешок</h3><p>Из него вырастет корень, который первым выходит из косточки.</p></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Удивительные факты</h2>
+    <div class="facts">
+      <div class="fact">
+        <svg id="height-comparison" viewBox="0 0 220 150" role="img">
+          <line x1="8" y1="140" x2="212" y2="140" stroke="#c9d3bb" stroke-width="2"/>
+          <rect x="146" y="22" width="10" height="118" fill="#6e4126"/>
+          <ellipse cx="151" cy="50" rx="52" ry="32" fill="#4b7a22"/>
+          <rect x="30" y="132.3" width="8" height="7.7" fill="#4b7a22"/>
+          <circle cx="72" cy="121" r="4" fill="#1d2916"/>
+          <rect x="69" y="125" width="6" height="15" rx="3" fill="#1d2916"/>
+          <g text-anchor="middle" font-size="11" font-weight="700" fill="#56664a">
+            <text x="34" y="124" id="sprout-height"></text>
+            <text x="72" y="110" id="student-height"></text>
+            <text x="151" y="12" id="tree-height"></text>
+          </g>
+        </svg>
+        <h3 class="big" id="tree-height-title"></h3>
+        <p>Такой высоты авокадо вырастает в природе. Это выше шестиэтажного дома.</p>
+      </div>
+      <div class="fact">
+        <h3 class="big">Ягода</h3>
+        <p>Для ботаников авокадо — ягода с одной большой косточкой, как вишня.</p>
+      </div>
+      <div class="fact">
+        <h3 class="big">Мексика</h3>
+        <p>Родина авокадо. Древние ацтеки называли его «ахуакатль».</p>
+      </div>
+      <div class="fact">
+        <h3 class="big">Гигантские ленивцы</h3>
+        <p>Огромные косточки когда-то глотали и разносили древние гиганты. Они вымерли, и теперь авокадо разносит только человек.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="box ar-qr" aria-label="Дополненная реальность">
+    <!-- Тот же QR, что на карточках: node cards/make_qr.cjs <адрес>, проверка — test_cards_qr.py. -->
+    <svg class="qr" viewBox="0 0 37 37" role="img" aria-label="QR-код страницы с деревцем" shape-rendering="crispEdges">
+      <rect width="37" height="37" fill="#fff"/>
+      <path fill="#000" d="M4 4h7v1h-7zM12 4h1v1h-1zM14 4h1v1h-1zM17 4h3v1h-3zM23 4h2v1h-2zM26 4h7v1h-7zM4 5h1v1h-1zM10 5h1v1h-1zM12 5h1v1h-1zM15 5h3v1h-3zM20 5h1v1h-1zM24 5h1v1h-1zM26 5h1v1h-1zM32 5h1v1h-1zM4 6h1v1h-1zM6 6h3v1h-3zM10 6h1v1h-1zM13 6h4v1h-4zM20 6h1v1h-1zM24 6h1v1h-1zM26 6h1v1h-1zM28 6h3v1h-3zM32 6h1v1h-1zM4 7h1v1h-1zM6 7h3v1h-3zM10 7h1v1h-1zM12 7h1v1h-1zM18 7h2v1h-2zM21 7h1v1h-1zM23 7h1v1h-1zM26 7h1v1h-1zM28 7h3v1h-3zM32 7h1v1h-1zM4 8h1v1h-1zM6 8h3v1h-3zM10 8h1v1h-1zM15 8h1v1h-1zM18 8h1v1h-1zM20 8h5v1h-5zM26 8h1v1h-1zM28 8h3v1h-3zM32 8h1v1h-1zM4 9h1v1h-1zM10 9h1v1h-1zM16 9h2v1h-2zM19 9h2v1h-2zM22 9h3v1h-3zM26 9h1v1h-1zM32 9h1v1h-1zM4 10h7v1h-7zM12 10h1v1h-1zM14 10h1v1h-1zM16 10h1v1h-1zM18 10h1v1h-1zM20 10h1v1h-1zM22 10h1v1h-1zM24 10h1v1h-1zM26 10h7v1h-7zM12 11h1v1h-1zM15 11h1v1h-1zM19 11h4v1h-4zM4 12h1v1h-1zM6 12h2v1h-2zM9 12h3v1h-3zM16 12h2v1h-2zM19 12h1v1h-1zM21 12h1v1h-1zM26 12h1v1h-1zM29 12h1v1h-1zM31 12h2v1h-2zM5 13h5v1h-5zM11 13h1v1h-1zM13 13h7v1h-7zM21 13h8v1h-8zM32 13h1v1h-1zM5 14h1v1h-1zM8 14h3v1h-3zM12 14h1v1h-1zM14 14h4v1h-4zM20 14h1v1h-1zM22 14h1v1h-1zM28 14h1v1h-1zM30 14h2v1h-2zM4 15h2v1h-2zM7 15h3v1h-3zM11 15h3v1h-3zM15 15h1v1h-1zM20 15h1v1h-1zM22 15h5v1h-5zM32 15h1v1h-1zM4 16h5v1h-5zM10 16h2v1h-2zM13 16h1v1h-1zM15 16h2v1h-2zM18 16h2v1h-2zM21 16h1v1h-1zM24 16h1v1h-1zM29 16h2v1h-2zM11 17h2v1h-2zM14 17h1v1h-1zM18 17h1v1h-1zM20 17h2v1h-2zM23 17h1v1h-1zM26 17h1v1h-1zM30 17h3v1h-3zM4 18h1v1h-1zM8 18h4v1h-4zM14 18h1v1h-1zM16 18h2v1h-2zM19 18h2v1h-2zM23 18h1v1h-1zM25 18h4v1h-4zM30 18h3v1h-3zM4 19h1v1h-1zM7 19h3v1h-3zM12 19h1v1h-1zM14 19h1v1h-1zM16 19h1v1h-1zM18 19h1v1h-1zM20 19h1v1h-1zM23 19h1v1h-1zM25 19h1v1h-1zM27 19h1v1h-1zM31 19h1v1h-1zM4 20h1v1h-1zM6 20h1v1h-1zM8 20h1v1h-1zM10 20h3v1h-3zM16 20h1v1h-1zM18 20h3v1h-3zM22 20h1v1h-1zM25 20h1v1h-1zM27 20h3v1h-3zM31 20h1v1h-1zM6 21h3v1h-3zM13 21h1v1h-1zM16 21h1v1h-1zM18 21h1v1h-1zM20 21h1v1h-1zM22 21h1v1h-1zM24 21h1v1h-1zM27 21h1v1h-1zM29 21h3v1h-3zM4 22h1v1h-1zM7 22h4v1h-4zM15 22h8v1h-8zM24 22h1v1h-1zM26 22h1v1h-1zM30 22h1v1h-1zM6 23h1v1h-1zM8 23h1v1h-1zM12 23h1v1h-1zM14 23h1v1h-1zM17 23h2v1h-2zM21 23h1v1h-1zM23 23h1v1h-1zM25 23h2v1h-2zM30 23h1v1h-1zM5 24h6v1h-6zM12 24h1v1h-1zM14 24h1v1h-1zM17 24h2v1h-2zM20 24h2v1h-2zM24 24h7v1h-7zM12 25h1v1h-1zM14 25h1v1h-1zM16 25h1v1h-1zM19 25h4v1h-4zM24 25h1v1h-1zM28 25h5v1h-5zM4 26h7v1h-7zM12 26h1v1h-1zM15 26h2v1h-2zM18 26h2v1h-2zM22 26h3v1h-3zM26 26h1v1h-1zM28 26h2v1h-2zM31 26h1v1h-1zM4 27h1v1h-1zM10 27h1v1h-1zM12 27h3v1h-3zM17 27h3v1h-3zM22 27h1v1h-1zM24 27h1v1h-1zM28 27h2v1h-2zM32 27h1v1h-1zM4 28h1v1h-1zM6 28h3v1h-3zM10 28h1v1h-1zM14 28h1v1h-1zM20 28h1v1h-1zM22 28h1v1h-1zM24 28h5v1h-5zM30 28h1v1h-1zM32 28h1v1h-1zM4 29h1v1h-1zM6 29h3v1h-3zM10 29h1v1h-1zM12 29h1v1h-1zM14 29h2v1h-2zM28 29h2v1h-2zM31 29h1v1h-1zM4 30h1v1h-1zM6 30h3v1h-3zM10 30h1v1h-1zM12 30h3v1h-3zM17 30h2v1h-2zM21 30h2v1h-2zM27 30h1v1h-1zM30 30h1v1h-1zM32 30h1v1h-1zM4 31h1v1h-1zM10 31h1v1h-1zM14 31h2v1h-2zM17 31h3v1h-3zM21 31h2v1h-2zM24 31h1v1h-1zM26 31h4v1h-4zM31 31h1v1h-1zM4 32h7v1h-7zM12 32h5v1h-5zM21 32h5v1h-5zM27 32h1v1h-1zM31 32h1v1h-1z"/>
+    </svg>
+    <div class="ar-qr-text">
+      <h2>Авокадо в твоём телефоне!</h2>
+      <p>Наведи камеру телефона на код — деревце вырастет прямо у тебя на столе.</p>
+      <p class="gift">А дома — дерево с плодами в подарок!</p>
+      <p class="foot">avocado-forum.ru/ar</p>
+    </div>
+  </section>
+
+  <p class="foot">3D-модель: Blender. Цифры роста примерные, по опыту садоводов.</p>
+</main>
+
+<dialog id="pult" aria-label="Пульт выступления">
+  <div id="projection">
+    <div class="stage" id="stage">
+      <div id="slide" class="slide"></div>
+      <span class="hint" id="hint"></span>
+    </div>
+  </div>
+</dialog>
+</body>
+</html>

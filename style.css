@@ -183,13 +183,17 @@ output { min-width: 6ch; text-align: right; }
 .parts { margin: 0; display: grid; gap: 10px; padding-left: 24px; }
 .parts li::marker { color: var(--accent); font-weight: 700; }
 .parts p, .fact p { font-size: 15px; line-height: 1.4; }
-.facts, .soon { display: grid; gap: 12px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.facts { display: grid; gap: 12px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .fact h3 { margin-bottom: 6px; color: var(--skin); font-size: 23px; line-height: 1.1; }
 .facts .fact { display: grid; align-content: start; gap: 8px; }
 .fact .big { margin: 0; font-size: 26px; }
 .fact svg { display: block; width: 100%; height: auto; }
-.soon { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.soon span, .foot { font-size: 14px; color: var(--muted); }
+.ar-qr { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 28px; align-items: center; }
+.ar-qr .qr { display: block; width: 100%; height: auto; }
+.ar-qr-text { display: grid; gap: 10px; }
+.ar-qr-text p { font-size: 19px; line-height: 1.4; }
+.ar-qr .gift { font-weight: 700; color: var(--accent); }
+.foot { font-size: 14px; color: var(--muted); }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 
 @media (max-width: 880px) {
@@ -201,7 +205,8 @@ output { min-width: 6ch; text-align: right; }
   .stages { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 @media (max-width: 520px) {
-  .facts, .soon { grid-template-columns: minmax(0, 1fr); }
+  .facts, .ar-qr { grid-template-columns: minmax(0, 1fr); }
+  .ar-qr .qr { max-width: 240px; }
 }
 
 .btn.ar-link {
