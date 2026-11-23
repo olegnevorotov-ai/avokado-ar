@@ -1,84 +1,225 @@
 'use strict';
 
 (() => {
-  const pult = document.getElementById('pult');
-  const projection = document.getElementById('projection');
-  const stage = document.getElementById('stage');
-  const slide = document.getElementById('slide');
-  const hint = document.getElementById('hint');
+  const byId = id => document.getElementById(id);
+  const pult = byId('pult');
+  const projection = byId('projection');
+  const stage = byId('stage');
+  const slide = byId('slide');
+  const hint = byId('hint');
+  const numbers = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 1 });
+  const stages = filmData.parts.map((part, index) => index === 3 ? 'Росток' : part);
+  const leafStage = stages.indexOf('Листья');
+  const votes = new Map();
   let screens = [];
   let current = 0;
-  let idleTimer;
   let previousFocus;
-  let fullscreen = false;
+  let enteredFullscreen = false;
 
-  function artwork(file, className = '') {
-    const image = new Image();
-    image.src = offlineMedia.url(`${file}`);
-    image.className = className;
-    image.alt = '';
-    return image;
-  }
-
-  function text(tag, content, className = '') {
+  function text(tag, content, style) {
     const node = document.createElement(tag);
     node.textContent = content;
-    node.className = className;
+    if (style) node.className = style;
     return node;
   }
 
-  function answer(label, icon) {
-    const card = text('div', '', 'answer');
-    const mark = text('i', icon);
-    mark.setAttribute('aria-hidden', 'true');
-    card.append(mark, label);
-    return card;
+  function artwork(file, style) {
+    const image = new Image();
+    image.alt = '';
+    image.src = offlineMedia.url(file);
+    image.className = style;
+    return image;
   }
 
-  function question(screen) {
-    const scenario = filmData.scenarios[screen.scenario];
+  function facts(content) {
+    const { tree, student } = pultConfig.heightFacts;
+    const sprout = `${filmData.bestHeight} см`;
+    const diagram = content.querySelector('#height-comparison');
+    diagram.setAttribute('aria-label', `Росток ${sprout}, ученица ${student}, дерево авокадо ${tree}`);
+    content.querySelector('#tree-height-title').textContent = `до ${tree}`;
+    content.querySelector('#sprout-height').textContent = sprout;
+    content.querySelector('#student-height').textContent = student;
+    content.querySelector('#tree-height').textContent = tree;
+  }
+
+  function intro(screen) {
+    const content = byId(screen.template).content.cloneNode(true);
+    if (screen.id === 'facts') facts(content);
+    if (screen.image) slide.append(artwork(screen.image, 'cover'));
+    slide.append(content);
+  }
+
+  function voting(screen) {
+    const { name, sub } = filmData.scenarios[screen.scenario];
     const panel = text('div', '', 'question');
     panel.append(
-      text('span', `ОПЫТ ${screen.number} ИЗ ${screen.total}`, 'experiment'),
-      text('h2', scenario.name),
-      text('p', screen.question),
+      text('p', `ОПЫТ ${screen.number} ИЗ ${screen.total}`, 'eyebrow'),
+      text('h2', name),
+      text('p', screen.question, 'question-text'),
     );
-    if (screen.scenario === 'cool') panel.append(text('span', scenario.sub, 'badge'));
+    if (screen.scenario === 'cool') panel.append(text('p', sub, 'temperature'));
     const cards = text('div', '', 'answers');
-    cards.append(answer('ВЫРАСТЕТ!', '✓'), answer('НЕ ВЫРАСТЕТ', '×'));
-    panel.append(cards);
-    slide.append(artwork(`${screen.scenario}-start.jpg`, 'question-bg'), panel);
+    cards.setAttribute('role', 'group');
+    cards.setAttribute('aria-label', 'Выбор зала');
+    for (const option of voteOptions) {
+      const card = text('button', '', `answer ${option.id}`);
+      card.id = `vote-${option.id}`;
+      card.type = 'button';
+      card.dataset.vote = option.id;
+      const marker = text('span', 'ЗАЛ ВЫБРАЛ', 'vote-marker');
+      marker.setAttribute('aria-hidden', 'true');
+      card.append(marker, `${option.mark} ${option.label}${option.punctuation ?? ''}`);
+      card.addEventListener('click', event => {
+        event.stopPropagation();
+        if (votes.get(screen.scenario) === option.id) votes.delete(screen.scenario);
+        else votes.set(screen.scenario, option.id);
+        updateCards();
+        if (event.detail) stage.focus();
+      });
+      cards.append(card);
+    }
+
+    function updateCards() {
+      const selected = votes.get(screen.scenario);
+      cards.classList.toggle('has-vote', Boolean(selected));
+      for (const card of cards.children) card.ariaPressed = String(card.dataset.vote === selected);
+    }
+
+    updateCards();
+    slide.append(artwork(screen.image, 'cover'), panel, cards);
   }
 
-  function clip(name) {
+  function metric(label, value) {
+    const tile = text('div', '', 'metric');
+    tile.append(text('span', label), value);
+    return tile;
+  }
+
+  function growthPanel(clip) {
+    const scenario = clip === 'hero' ? 'best' : clip;
+    const entry = filmData.scenarios[scenario];
+    const days = clip === 'hero' ? pultConfig.heroDays : entry.days;
+    const milestones = (clip === 'hero' ? pultConfig.heroStages : entry.stageFrames).slice();
+    // Метка в ролике учитывает и зачатки. Этап начинается с первого листа,
+    // который виден на кадре и учитывается моделью.
+    const firstLeafFrame = milestones[leafStage];
+    if (firstLeafFrame !== null) {
+      const visibleLeaf = days.findIndex((day, frame) =>
+        frame >= firstLeafFrame && entry.leaves[day] > 0);
+      milestones[leafStage] = visibleLeaf < 0 ? null : visibleLeaf;
+    }
+    const panel = text('aside', '', 'growth');
+    panel.setAttribute('aria-label', 'Показатели роста');
+    const counter = text('p', '', 'eyebrow day');
+    const height = text('strong', '', 'height-value');
+    const heightLine = text('p', '', 'height');
+    heightLine.setAttribute('aria-label', 'Высота');
+    heightLine.append(height, text('span', 'см'));
+    const leaves = text('strong', '', 'leaf-value');
+    const root = text('strong', '', 'root-value');
+    const metrics = text('div', '', 'metrics');
+    metrics.append(metric('Листьев', leaves), metric('Корень', root));
+    const { chart, reveal } = pultCharts.growth(scenario);
+    const stepList = text('ol', '', 'steps');
+    const stepItems = stages.map(label => text('li', label));
+    stepList.append(...stepItems);
+    panel.append(counter, heightLine, metrics, chart, stepList);
+
+    let previousDay;
+    function update(seconds, ended = false) {
+      // mediaTime соответствует показанному кадру. На ended фиксируем правую границу опыта.
+      const frame = ended ? days.length - 1 : Math.min(days.length - 1, Math.floor(
+        seconds * filmData.fps + 0.001,
+      ));
+      const day = days[frame];
+      if (day !== previousDay) {
+        panel.dataset.day = day;
+        counter.textContent = `ДЕНЬ ${day} ИЗ ${filmData.days}`;
+        height.textContent = numbers.format(entry.height[day]);
+        leaves.textContent = entry.leaves[day];
+        root.textContent = `${numbers.format(entry.root[day])} см`;
+        reveal(day);
+        previousDay = day;
+      }
+      const active = stepItems.map((_, index) => milestones[index] !== null && milestones[index] <= frame);
+      const latest = active.lastIndexOf(true);
+      stepItems.forEach((step, index) => {
+        step.classList.toggle('reached', active[index]);
+        if (index === latest) step.setAttribute('aria-current', 'step');
+        else step.removeAttribute('aria-current');
+      });
+    }
+
+    update(0);
+    return { panel, update };
+  }
+
+  function observeVideo(video, update) {
+    if ('requestVideoFrameCallback' in video) {
+      const frame = (_now, { mediaTime }) => {
+        if (!video.isConnected || video.ended) return;
+        update(mediaTime);
+        video.requestVideoFrameCallback(frame);
+      };
+      video.requestVideoFrameCallback(frame);
+    } else {
+      video.addEventListener('timeupdate', () => update(video.currentTime));
+    }
+  }
+
+  function showResult(frame, scenario) {
+    const result = voteResult(scenario, votes.get(scenario));
+    const banner = text('div', '', 'result');
+    banner.dataset.tone = result.tone;
+    banner.setAttribute('role', 'status');
+    frame.append(banner);
+    banner.append(text('h2', result.heading), text('p', result.explanation));
+  }
+
+  function clip(screen) {
+    const { clip: name, files } = screen;
+    const comparison = name === 'compare';
+    const stats = name === 'hero' || Object.hasOwn(filmData.scenarios, name) ? growthPanel(name) : null;
+    const layout = text('div', '', comparison ? 'clip compare' : stats ? 'clip with-growth' : 'clip');
+    const frame = text('div', '', 'clip-frame');
     const video = document.createElement('video');
-    video.src = offlineMedia.url(`${name}.mp4`);
-    video.poster = offlineMedia.url(`${name}-start.jpg`);
+    video.src = offlineMedia.url(files.video);
+    video.poster = offlineMedia.url(files.poster);
     video.playsInline = true;
     video.preload = 'auto';
-    video.setAttribute('aria-label', filmData.titles[name]);
-    const lastFrame = artwork(`${name}-end.jpg`);
+    video.setAttribute('aria-label', pultConfig.titles[name]);
     const retry = text('button', 'Запустить ролик со звуком', 'btn primary play-fallback');
     retry.type = 'button';
     retry.hidden = true;
     const play = () => video.play().then(() => {
       retry.hidden = true;
     }).catch(error => {
-      if (!video.isConnected || error.name === 'AbortError') return;
-      retry.hidden = false;
+      if (video.isConnected && error.name !== 'AbortError') retry.hidden = false;
     });
     retry.addEventListener('click', event => {
       event.stopPropagation();
       play();
       stage.focus();
     });
-    video.addEventListener('ended', () => {
-      // Видеокадр остаётся видимым, пока локальный стоп-кадр декодируется.
-      lastFrame.decode().then(() => {
-        if (video.isConnected) video.replaceWith(lastFrame);
-      }).catch(() => {});
-    });
-    slide.append(video, retry);
+    frame.append(video, retry);
+    layout.append(frame);
+    if (stats) layout.append(stats.panel);
+    if (comparison) layout.append(pultCharts.comparison());
+    slide.append(layout);
+
+    if (stats) observeVideo(video, stats.update);
+    video.addEventListener('ended', async () => {
+      stats?.update(video.currentTime, true);
+      if (Object.hasOwn(experimentResults, name)) showResult(frame, name);
+      const still = artwork(files.still, 'clip-still');
+      try {
+        await still.decode();
+        if (video.isConnected) video.replaceWith(still);
+      } catch (error) {
+        // При ошибке декодирования оставляем последний кадр видеоплеера.
+        console.warn('Не удалось открыть стоп-кадр', error);
+      }
+    }, { once: true });
     play();
   }
 
@@ -87,21 +228,18 @@
     slide.replaceChildren();
     const screen = screens[current];
     slide.dataset.screen = screen.id;
-    if (screen.question) question(screen);
-    else if (screen.clip) clip(screen.clip);
-    else {
-      slide.append(artwork(screen.image));
-      if (screen.id === 'theme') {
-        slide.append(text('h2', document.getElementById('theme').textContent, 'theme-card'));
-      }
-    }
-    hint.textContent = screen.question ? 'Пробел — ролик · Esc — выход'
+    if (screen.template) intro(screen);
+    else if (screen.question) voting(screen);
+    else if (screen.clip) clip(screen);
+    else slide.append(artwork(screen.image, 'cover'));
+    hint.textContent = screen.question ? 'Щёлкните карточку · Пробел — ролик · Esc — выход'
       : current === screens.length - 1 ? '← назад · Esc — выход'
-      : 'Пробел — дальше · Esc — выход';
+        : 'Пробел — дальше · Esc — выход';
+    stage.focus();
   }
 
   function move(offset) {
-    const next = Math.min(screens.length - 1, Math.max(0, current + offset));
+    const next = Math.max(0, Math.min(screens.length - 1, current + offset));
     if (next === current) return;
     current = next;
     render();
@@ -109,37 +247,36 @@
 
   function close() {
     if (!pult.open) return;
-    pult.close();
+    enteredFullscreen = false;
     slide.querySelector('video')?.pause();
     slide.replaceChildren();
-    clearTimeout(idleTimer);
-    if (document.fullscreenElement === projection) document.exitFullscreen().catch(() => {});
-    document.body.style.overflow = '';
-    previousFocus?.focus();
+    delete slide.dataset.screen;
+    pult.close();
+    const restoreFocus = () => {
+      if (!pult.open) previousFocus.focus();
+    };
+    if (document.fullscreenElement === projection) {
+      document.exitFullscreen().then(restoreFocus, restoreFocus);
+    } else restoreFocus();
   }
 
-  function start(short) {
-    previousFocus = document.activeElement;
-    document.querySelectorAll('main video').forEach(video => video.pause());
-    screens = slidesFor(short);
+  function start(short, button) {
+    previousFocus = button;
+    screens = websiteSlides(short);
     current = 0;
-    fullscreen = false;
+    votes.clear();
     pult.showModal();
-    stage.tabIndex = -1;
-    stage.focus();
-    document.body.style.overflow = 'hidden';
     render();
-    // Элемент dialog не поддерживает requestFullscreen, поэтому разворачиваем его содержимое.
-    projection.requestFullscreen?.().catch(() => {
-      // Диалог занимает окно, даже если браузер отклонил полноэкранный режим.
-    });
+    // В случае отказа полноэкранного API диалог уже занимает окно.
+    projection.requestFullscreen?.().catch(() => {});
   }
 
-  document.getElementById('start-full').addEventListener('click', () => start(false));
-  document.getElementById('start-short').addEventListener('click', () => start(true));
-  pult.addEventListener('click', () => move(1));
+  byId('start-full').addEventListener('click', event => start(false, event.currentTarget));
+  byId('start-short').addEventListener('click', event => start(true, event.currentTarget));
+  stage.addEventListener('click', () => move(1));
   pult.addEventListener('keydown', event => {
     if (![' ', 'ArrowRight', 'ArrowLeft', 'Escape'].includes(event.key)) return;
+    if (event.key === ' ' && event.target.matches('button')) return;
     event.preventDefault();
     if (event.repeat) return;
     if (event.key === 'Escape') close();
@@ -150,12 +287,7 @@
     close();
   });
   document.addEventListener('fullscreenchange', () => {
-    if (document.fullscreenElement === projection) fullscreen = true;
-    else if (fullscreen) close();
-  });
-  stage.addEventListener('pointermove', () => {
-    stage.dataset.idle = 'false';
-    clearTimeout(idleTimer);
-    idleTimer = setTimeout(() => { stage.dataset.idle = 'true'; }, 900);
+    if (document.fullscreenElement === projection && pult.open) enteredFullscreen = true;
+    else if (enteredFullscreen) close();
   });
 })();

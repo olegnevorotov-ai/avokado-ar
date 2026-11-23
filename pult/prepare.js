@@ -1,6 +1,6 @@
 'use strict';
 
-// URL живут до закрытия страницы. Пульт и симулятор используют один набор Blob.
+// URL живут до закрытия страницы. Ролики и стоп-кадры открываются из памяти.
 const offlineMedia = (() => {
   const urls = new Map();
 
@@ -9,8 +9,8 @@ const offlineMedia = (() => {
     return urls.get(file);
   }
 
-  function prepare(initPage) {
-    const files = Object.entries(pultConfig.sizes);
+  function prepare() {
+    const files = websiteMedia().map(file => [file, pultConfig.sizes[file]]);
     const title = document.getElementById('prepare-title');
     const progress = document.getElementById('prepare-progress');
     const count = document.getElementById('prepare-count');
@@ -18,12 +18,15 @@ const offlineMedia = (() => {
     const message = document.getElementById('prepare-message');
     const retry = document.getElementById('prepare-retry');
     const panel = title.closest('section');
+    const bytesPerMegabyte = 1_000_000;
+    progress.max = files.reduce((sum, [, size]) => sum + size, 0);
+    document.getElementById('prepare-total').textContent = Math.round(progress.max / bytesPerMegabyte);
     let downloaded = 0;
 
     function showProgress(change) {
       downloaded += change;
       progress.value = downloaded;
-      const megabytes = String(Math.round(downloaded / 1_000_000));
+      const megabytes = String(Math.round(downloaded / bytesPerMegabyte));
       if (counter.textContent !== megabytes) counter.textContent = megabytes;
     }
 
@@ -33,6 +36,7 @@ const offlineMedia = (() => {
       message.textContent = text;
       message.hidden = false;
       count.hidden = true;
+      progress.hidden = state === 'ready';
     }
 
     async function download(file, size) {
@@ -63,6 +67,7 @@ const offlineMedia = (() => {
       retry.hidden = true;
       message.hidden = true;
       count.hidden = false;
+      progress.hidden = false;
       title.textContent = 'Готовим выступление…';
       panel.dataset.state = 'loading';
       const missing = files.filter(([file]) => !urls.has(file));
@@ -74,13 +79,7 @@ const offlineMedia = (() => {
         return;
       }
 
-      document.querySelectorAll('video[data-src]').forEach(video => {
-        video.poster = url(video.dataset.poster);
-        video.src = url(video.dataset.src);
-      });
-      Object.assign(filmData.titles, pultConfig.titles);
-      initPage();
-      panel.closest('main').removeAttribute('data-preparing');
+      await document.fonts.ready;
       showMessage('ready', '✓ Всё готово',
         'Все ролики уже в браузере. Интернет больше не нужен — только не перезагружайте страницу.');
       document.getElementById('start-full').disabled = false;
@@ -93,3 +92,5 @@ const offlineMedia = (() => {
 
   return { url, prepare };
 })();
+
+offlineMedia.prepare();

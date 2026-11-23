@@ -1,0 +1,75 @@
+@font-face {
+  font-family: Roboto;
+  src: url("../fonts/Roboto-Regular.ttf") format("truetype");
+  font-weight: 400;
+}
+@font-face {
+  font-family: Roboto;
+  src: url("../fonts/Roboto-Bold.ttf") format("truetype");
+  font-weight: 700;
+}
+:root {
+  --paper: #edf2e5;
+  --ink: #23391b;
+  --accent: #457720;
+  --line: #d3dfc3;
+  font-family: Roboto, Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); }
+[hidden] { display: none !important; }
+.launch {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+.preparation {
+  width: min(100%, 900px);
+  display: grid;
+  gap: 15px;
+  padding: clamp(20px, 3vw, 37px);
+  border: 1px solid var(--line);
+  border-radius: 19px;
+  background: #fff;
+}
+.preparation :is(h1, h2, p) { margin: 0; }
+.preparation h1 { font-size: clamp(24px, 3.1vw, 38px); }
+.preparation h2 { color: var(--accent); font-size: clamp(18px, 2vw, 24px); }
+.preparation p { color: #4a6140; font-size: clamp(15px, 1.6vw, 19px); }
+.preparation progress {
+  appearance: none;
+  width: 100%;
+  height: 14px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--line);
+  accent-color: var(--accent);
+}
+.preparation progress::-webkit-progress-bar {
+  background: var(--line);
+  border-radius: 999px;
+}
+.preparation progress::-webkit-progress-value {
+  background: var(--accent);
+  border-radius: 999px;
+}
+.preparation progress::-moz-progress-bar {
+  background: var(--accent);
+  border-radius: 999px;
+}
+.actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.btn {
+  padding: .72em 1.15em;
+  border: 2px solid var(--accent);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.btn.primary { background: var(--accent); color: #fff; }
+.btn:focus-visible { outline: 3px solid #95bc66; outline-offset: 3px; }
+.preparation .btn:disabled { display: none; }
+.preparation[data-state="loading"] .actions { display: none; }
