@@ -95,6 +95,36 @@
     return tile;
   }
 
+  function showSummary(screen) {
+    const summary = screen.summary === 'research'
+      ? researchConclusion(filmData) : miniConclusion(filmData, screen.summary);
+    const panel = text('section', '', 'summary');
+    panel.append(text('p', summary.eyebrow, 'eyebrow'), text('h2', summary.heading));
+    if (summary.findings) {
+      const findings = text('ul', '', 'findings');
+      for (const { mark, body } of summary.findings) {
+        const item = text('li', '', 'finding');
+        const icon = text('span', mark, 'finding-mark');
+        icon.dataset.mark = mark;
+        item.append(icon, text('span', body));
+        findings.append(item);
+      }
+      panel.append(findings);
+    } else {
+      panel.append(text('p', summary.body, 'summary-text'));
+      if (summary.comparisons.length) {
+        const cards = text('div', '', 'summary-comparisons');
+        for (const { scenario, name, label } of summary.comparisons) {
+          const card = metric(name, text('strong', label));
+          card.dataset.scenario = scenario;
+          cards.append(card);
+        }
+        panel.append(cards, text('p', summary.footer, 'summary-footer'));
+      }
+    }
+    slide.append(artwork(screen.image, 'cover'), panel);
+  }
+
   function growthPanel(clip) {
     const scenario = clip === 'hero' ? 'best' : clip;
     const entry = filmData.scenarios[scenario];
@@ -231,6 +261,7 @@
     if (screen.template) intro(screen);
     else if (screen.question) voting(screen);
     else if (screen.clip) clip(screen);
+    else if (screen.summary) showSummary(screen);
     else slide.append(artwork(screen.image, 'cover'));
     hint.textContent = screen.question ? 'Щёлкните карточку · Пробел — ролик · Esc — выход'
       : current === screens.length - 1 ? '← назад · Esc — выход'

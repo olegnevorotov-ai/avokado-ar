@@ -66,16 +66,50 @@ const pultCharts = (() => {
     return { chart: plot.chart, reveal: addSeries(plot, scenario) };
   }
 
+  function addComparisonLabels(plot, series) {
+    const endX = plot.x(filmData.days);
+    const labelX = endX + 40;
+    const rowSpacing = 42;
+    const firstBaseline = 17;
+    const lastBaseline = 209;
+    let previousBaseline = firstBaseline - rowSpacing;
+
+    // Раскладываем подписи сверху вниз, оставляя внизу место для близких значений.
+    const sorted = series.sort((left, right) => right.endHeight - left.endHeight);
+    sorted.forEach(({ scenario, entry, endHeight }, index) => {
+      const pointY = plot.y(endHeight);
+      const latest = lastBaseline - (sorted.length - index - 1) * rowSpacing;
+      const baseline = Math.max(previousBaseline + rowSpacing, Math.min(pointY - 5, latest));
+      previousBaseline = baseline;
+
+      const color = colors[scenario];
+      const label = svgNode('g', { class: 'series-label', 'data-scenario': scenario });
+      const stats = svgNode('text', { x: labelX, y: baseline + 16, class: 'series-stats' },
+        measurementLabel(finalMeasurements(filmData, scenario)));
+      if (scenario === 'best') {
+        stats.append(svgNode('tspan', { dx: 8, fill: color }, '★ здоровое деревце'));
+      }
+      label.append(
+        svgNode('text', { x: labelX, y: baseline, fill: color, class: 'series-name' }, entry.name),
+        stats,
+      );
+      // Линия указывает на свою подпись, даже когда она сдвинута от точки.
+      plot.chart.append(svgNode('path', {
+        d: `M ${endX + 6} ${pointY} H ${endX + 11} L ${labelX - 8} ${baseline + 4}`,
+        stroke: color, fill: 'none', class: 'series-leader',
+      }), label);
+    });
+  }
+
   function comparison() {
-    const plot = axes(1200, 235, 210, 'Сравнение высоты авокадо в пяти опытах');
-    for (const [scenario, entry] of Object.entries(filmData.scenarios)) {
+    const plot = axes(1200, 235, 325, 'Высота и листья авокадо в пяти опытах');
+    const series = Object.entries(filmData.scenarios).map(([scenario, entry]) => ({
+      scenario, entry, endHeight: entry.height[filmData.days],
+    }));
+    for (const { scenario } of series) {
       addSeries(plot, scenario)(filmData.days);
-      const final = entry.height[filmData.days];
-      plot.chart.append(svgNode('text', {
-        x: plot.x(filmData.days) + 13, y: plot.y(final) + 5,
-        fill: colors[scenario], class: 'series-label',
-      }, `${entry.name} · ${Math.round(final)} см`));
     }
+    addComparisonLabels(plot, series);
     return plot.chart;
   }
 

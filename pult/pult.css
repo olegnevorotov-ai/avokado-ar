@@ -216,7 +216,9 @@
 .chart-grid line { stroke: #35452b; stroke-width: 1; }
 .chart-grid text { fill: var(--muted); font-size: 14px; }
 .height-line { stroke-width: 3.7; stroke-linejoin: round; stroke-linecap: round; }
-.series-label { font-size: 17px; font-weight: 700; }
+.series-name { font-size: 17px; font-weight: 700; }
+.series-stats { fill: #e0e9d8; font-size: 15px; }
+.series-leader { opacity: .75; stroke-width: 1.4; }
 .compare .height-chart {
   height: 100%;
   padding: .55cqw 1.3cqw;
@@ -247,3 +249,69 @@
 .result[data-tone="wrong"] { background: #ac2926f7; }
 .result h2 { font-size: 2.8cqw; line-height: 1.13; }
 #stage .result p { margin-top: .55cqw; font-size: 1.63cqw; line-height: 1.24; }
+
+/* Непрозрачные края закрывают подписи, счётчик и шкалу, вшитые в кадр. */
+#slide:is([data-screen^="mini-"], [data-screen="conclusion"])::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(#10160f 17%, #10160fb5 38%, #10160f87 83%, #10160f 92%);
+}
+#slide:is([data-screen="mini-hero"], [data-screen="conclusion"])::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(#10160f 41%, transparent 65%);
+  mask-image: linear-gradient(90deg, #000 41%, transparent 64%);
+}
+.summary {
+  position: absolute;
+  z-index: 1;
+  inset: 9.5% 5.45% auto;
+}
+#stage .summary .eyebrow { margin-bottom: .8cqw; }
+.summary h2 { font-size: 3.85cqw; line-height: 1.12; }
+#stage .summary-text {
+  margin-top: 1.55cqw;
+  max-width: 94%;
+  font-size: 2.3cqw;
+  line-height: 1.36;
+  font-weight: 700;
+}
+.summary-comparisons {
+  display: flex;
+  gap: 1.55cqw;
+  margin-top: 2.4cqw;
+}
+.summary-comparisons .metric {
+  min-width: 27cqw;
+  padding: 1.15cqw 1.75cqw;
+  border-radius: 1.15cqw;
+  background: var(--surface);
+  color: #a1d468;
+}
+.summary-comparisons [data-scenario="dark"] { color: #c9b1ff; }
+.summary-comparisons .metric span { font-size: 1.48cqw; }
+.summary-comparisons .metric strong { font-size: 2.56cqw; }
+#stage .summary-footer {
+  margin-top: 2.1cqw;
+  color: #e0e9d8;
+  font-size: 1.9cqw;
+}
+.findings {
+  display: grid;
+  gap: 1.3cqw;
+  margin: 1.55cqw 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 2.16cqw;
+  line-height: 1.25;
+}
+.finding {
+  display: grid;
+  grid-template-columns: 2.45cqw 1fr;
+  gap: 1cqw;
+}
+.finding-mark { color: #a1d468; font-weight: 700; }
+.finding-mark[data-mark="✗"] { color: #f78d8d; }
+.finding-mark[data-mark="⏳"] { color: #ffbd65; }
